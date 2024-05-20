@@ -13,6 +13,7 @@ async function createTables(): Promise<void> {
     await db.run("CREATE TABLE IF NOT EXISTS drinks (" +
         "id INTEGER PRIMARY KEY," +
         "name TEXT NOT NULL," +
+        "img TEXT NOT NULL," +
         "ingredients TEXT NOT NULL," +
         "instructions TEXT NOT NULL," +
         "glass TEXT NOT NULL" +
