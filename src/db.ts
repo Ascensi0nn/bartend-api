@@ -30,15 +30,21 @@ export async function getAllDrinks(): Promise<Drink[]> {
     return drinks;
 }
 
-export async function searchDrinks(query: string): Promise<Drink[]> {
+export async function searchDrinks(query: string, strict: boolean): Promise<Drink[]> {
     if(db == null) return [];
 
     let drinks: Drink[] = [];
     query = sanitizeQuery(query);
-    console.log(query);
-    await db.each("SELECT * FROM drinks WHERE UPPER(name) LIKE ? ESCAPE '\\' OR UPPER(ingredients) LIKE ? ESCAPE '\\'", [query, query], (row) => {
-        drinks.push(parseRowAsDrink(row));
-    });
+    if(!strict) {
+        await db.each("SELECT * FROM drinks WHERE UPPER(name) LIKE ? ESCAPE '\\' OR UPPER(ingredients) LIKE ? ESCAPE '\\'", [query, query], (row) => {
+            drinks.push(parseRowAsDrink(row));
+        });
+    } else {
+        await db.each("SELECT * FROM drinks WHERE UPPER(name) LIKE ? ESCAPE '\\'", [query], (row) => {
+            drinks.push(parseRowAsDrink(row));
+        });
+    }
+
 
     return drinks;
 }
@@ -47,6 +53,7 @@ function parseRowAsDrink(row: any): Drink {
     return {
         id: row.id,
         name: row.name,
+        img: row.img,
         ingredients: JSON.parse(row.ingredients),
         instructions: row.instructions,
         glass: row.glass,

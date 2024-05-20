@@ -1,8 +1,10 @@
 import express, { Express } from "express";
+import cors from "cors";
 import { init } from "./db";
 import { router } from "./api";
 
 const app: Express = express();
+app.use(cors());
 app.use("/api/v1", router);
 
 async function start(): Promise<void> {
